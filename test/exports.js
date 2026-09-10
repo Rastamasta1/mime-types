@@ -14,6 +14,42 @@ describe('package.json exports', function () {
   })
 })
 
+describe('advertised paths exist and are covered by "files"', function () {
+  var pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'))
+  var root = path.join(__dirname, '..')
+
+  var advertised = []
+  if (pkg.types) {
+    advertised.push(pkg.types)
+  }
+  if (pkg.exports) {
+    Object.keys(pkg.exports).forEach(function (key) {
+      var value = pkg.exports[key]
+      if (key === './package.json') {
+        return
+      }
+      if (typeof value === 'string') {
+        advertised.push(value)
+      }
+    })
+  }
+
+  advertised.forEach(function (advertisedPath) {
+    var normalized = advertisedPath.replace(/^\.\//, '')
+
+    it('"' + advertisedPath + '" should exist on disk', function () {
+      assert.ok(fs.existsSync(path.join(root, normalized)), advertisedPath + ' does not exist on disk')
+    })
+
+    it('"' + advertisedPath + '" should be covered by "files"', function () {
+      var covered = pkg.files.some(function (f) {
+        return normalized === f || normalized.indexOf(f + '/') === 0
+      })
+      assert.ok(covered, advertisedPath + ' is not covered by package.json "files"')
+    })
+  })
+})
+
 describe('index.d.ts', function () {
   var indexSource = fs.readFileSync(path.join(__dirname, '..', 'index.js'), 'utf8')
   var typesSource = fs.readFileSync(path.join(__dirname, '..', 'index.d.ts'), 'utf8')
