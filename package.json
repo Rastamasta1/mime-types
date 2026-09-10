@@ -17,6 +17,7 @@
     "type": "opencollective",
     "url": "https://opencollective.com/express"
   },
+  "types": "./index.d.ts",
   "exports": {
     ".": "./index.js",
     "./package.json": "./package.json"
@@ -38,6 +39,7 @@
   "files": [
     "HISTORY.md",
     "LICENSE",
+    "index.d.ts",
     "index.js",
     "mimeScore.js"
   ],
